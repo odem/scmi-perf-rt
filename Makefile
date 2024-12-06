@@ -2,6 +2,12 @@
 .PHONY: default start stop clean
 default: usage
 
+POLICY:=rr
+INTERVAL:=1000
+ITERATIONS:=10000
+THREADS:=1
+CLOCK_RT:=1
+
 # Makefile setup
 SHELL:=/bin/bash
 RT_KERNEL := $(shell uname -r | grep -i 'rt')
@@ -25,11 +31,18 @@ install:
 	fi
 
 test:
+	@echo "### Prio 0 ########################"
+	@sudo cyclictest -c $(CLOCK_RT) -t $(THREADS) \
+		--priority=0 --policy=$(POLICY) -i $(INTERVAL) -l $(ITERATIONS)
 	@echo "### Prio 10 ########################"
-	@sudo cyclictest -t 1 -p 10 -i 1000 -l 10000
+	@sudo cyclictest -c $(CLOCK_RT) -t $(THREADS) \
+		--priority=10 --policy=$(POLICY) -i $(INTERVAL) -l $(ITERATIONS)
 	@echo "### Prio 20 ########################"
-	@sudo cyclictest -t 1 -p 20 -i 1000 -l 10000
+	@sudo cyclictest -c $(CLOCK_RT) -t $(THREADS) \
+		--priority=20 --policy=$(POLICY) -i $(INTERVAL) -l $(ITERATIONS)
 	@echo "### Prio 30 ########################"
-	@sudo cyclictest -t 1 -p 30 -i 1000 -l 10000
+	@sudo cyclictest -c $(CLOCK_RT) -t $(THREADS) \
+		--priority=30 --policy=$(POLICY) -i $(INTERVAL) -l $(ITERATIONS)
 	@echo "### Prio 99 ########################"
-	@sudo cyclictest -t 1 -p 99 -i 1000 -l 10000
+	@sudo cyclictest -c $(CLOCK_RT) -t $(THREADS) \
+		--priority=99 --policy=$(POLICY) -i $(INTERVAL) -l $(ITERATIONS)
